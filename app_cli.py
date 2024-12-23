@@ -1,6 +1,7 @@
 import sqlite3
 import datetime
 import re
+from dateutil.relativedelta import relativedelta
 
 def create_database():
     """Creates the database and the medications table if they don't exist."""
@@ -128,9 +129,9 @@ def cli_add_medication():
     notes = input("Enter notes (optional, press Enter to skip): ")
     add_medication(brand_name, medication_name, expiry_date_str, location, notes if notes else None)
 
-def cli_edit_medication(medication_id = None):
+def cli_edit_medication(medication_id = None, expired_medications = None):
     """Interactively prompts the user to edit an existing medication."""
-
+    
     if medication_id is None:
       view_medications()  # Show medications with their IDs first
       medication_id = input("Enter the ID of the medication to edit: ")
@@ -192,31 +193,8 @@ def cli_delete_medication():
     else:
         print("Deletion cancelled.")
 
-def get_closest_expiry():
-    """Gets the medication with the closest expiry date."""
-    conn = sqlite3.connect("medications.db")
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM medications")
-    medications = cursor.fetchall()
-    conn.close()
-    
-    closest_expiry = None
-    closest_expiry_date = None
-    
-    for medication in medications:
-      try:
-        expiry_date = datetime.datetime.strptime(medication[3], "%Y/%m").date()
-      except ValueError:
-          continue
-      
-      if closest_expiry_date is None or expiry_date < closest_expiry_date:
-          closest_expiry_date = expiry_date
-          closest_expiry = medication
-    
-    return closest_expiry
-
-def get_expired_medications():
-    """Gets all medications that have expired today."""
+def get_expiry_alerts():
+    """Gets medications with the closest expiry date, within one month, and within two months."""
     conn = sqlite3.connect("medications.db")
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM medications")
@@ -224,44 +202,78 @@ def get_expired_medications():
     conn.close()
 
     today = datetime.date.today()
-    expired_medications = []
-    today_str = today.strftime("%Y/%m")  # Format today to YYYY/MM
+    one_month_later = today + relativedelta(months=1)
+    two_months_later = today + relativedelta(months=2)
+    
+    expired_meds = []
+    expiring_in_one_month_meds = []
+    expiring_in_two_months_meds = []
+    closest_expiry_meds = []
+    closest_expiry_date = None
 
     for medication in medications:
         try:
-            if medication[3] == today_str:
-                expired_medications.append(medication)
+            expiry_date = datetime.datetime.strptime(medication[3], "%Y/%m").date()
         except ValueError:
             continue
+
+        if expiry_date <= today:
+            expired_meds.append(medication)
+        elif today < expiry_date <= one_month_later:
+            expiring_in_one_month_meds.append(medication)
+        elif today < expiry_date <= two_months_later:
+            expiring_in_two_months_meds.append(medication)
+        
+        if closest_expiry_date is None or expiry_date < closest_expiry_date:
+            closest_expiry_date = expiry_date
+            closest_expiry_meds = [medication] # new min date, reset list
+        elif expiry_date == closest_expiry_date:
+             closest_expiry_meds.append(medication) # same min date, append to the list
+        
     
-    return expired_medications
+    return {
+        "expired": expired_meds,
+        "expiring_in_one_month": expiring_in_one_month_meds,
+        "expiring_in_two_months": expiring_in_two_months_meds,
+        "closest_expiry": closest_expiry_meds
+    }
 
 def main():
     create_database()
     
     while True:
-        expired_medications = get_expired_medications()
-        closest_expiry = get_closest_expiry()
+        expiry_alerts = get_expiry_alerts()
     
         print("\nMedication Tracker Menu")
+        print("-----------------------")
         
-        if expired_medications:
+        if expiry_alerts["expired"] and len(expiry_alerts["expired"]) > 0:
           print("Alert: The following medications have expired today. Please edit or delete:")
-          for med in expired_medications:
+          for med in expiry_alerts["expired"]:
               print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
         
           print("You must edit or delete these medications before adding new ones.")
-            
-        elif closest_expiry:
-           print("Alert: The following medication has the soonest expiry date:")
-           print(f"  ID: {closest_expiry[0]}")
-           print(f"  Brand Name: {closest_expiry[1]}")
-           print(f"  Medication Name: {closest_expiry[2]}")
-           print(f"  Expiry Date: {closest_expiry[3]}")
-           print("---")
-        else:
+          print("-----------------------")
+
+        if expiry_alerts["expiring_in_one_month"] and len(expiry_alerts["expiring_in_one_month"]) > 0:
+            print("Alert: The following medication(s) expire within the next month:")
+            for med in expiry_alerts["expiring_in_one_month"]:
+                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+
+        if expiry_alerts["expiring_in_two_months"] and len(expiry_alerts["expiring_in_two_months"]) > 0:
+          print("Alert: The following medication(s) expire within the next two months:")
+          for med in expiry_alerts["expiring_in_two_months"]:
+            print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+
+        if expiry_alerts["closest_expiry"] and not expiry_alerts["expiring_in_one_month"] and not expiry_alerts["expiring_in_two_months"]: # Check if already added
+            print("Alert: The following medication(s) have the soonest expiry date:")
+            for med in expiry_alerts["closest_expiry"]:
+                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+        
+        if not expiry_alerts["expired"] and not expiry_alerts["expiring_in_one_month"] and not expiry_alerts["expiring_in_two_months"] and not expiry_alerts["closest_expiry"]:
           print("No medications found or no valid expiry dates.")
 
+        print("-----------------------")
         print("1. Add Medication")
         print("2. View Medications")
         print("3. Edit Medication")
@@ -269,28 +281,30 @@ def main():
         print("5. Search Medications")
         print("6. Exit")
         choice = input("Enter your choice: ")
+        
+        if len(expiry_alerts["expired"]) > 0 and choice == "1":
+             print("You must edit or delete expired medications before adding new ones.")
 
-        if expired_medications and choice == "1":
-          print("You must edit or delete expired medications before adding new ones.")
+        elif choice == "3" and expiry_alerts["expired"]: # call edit logic ONLY when editing an expired record
+           med_id_str = input("Enter the ID of the expired medication to edit: ")
+           try:
+                med_id = int(med_id_str)
+                # Check if medication_id is in expired_medications
+                if any(med[0] == med_id for med in expiry_alerts["expired"]):
+                    cli_edit_medication(med_id, expiry_alerts["expired"])
+                else:
+                     print("Invalid medication ID for expired medications.")
+           except ValueError:
+                print("Invalid medication ID.")
+        
         elif choice == "1":
             cli_add_medication()
         elif choice == "2":
             view_medications()
         elif choice == "3":
-            if expired_medications:
-              med_id_str = input("Enter the ID of the expired medication to edit: ")
-              try:
-                  med_id = int(med_id_str)
-                  # Check if medication_id is in expired_medications
-                  if any(med[0] == med_id for med in expired_medications):
-                      cli_edit_medication(med_id)
-                      expired_medications = get_expired_medications()  # Refresh the expired list after editing.
-                  else:
-                      print("Invalid medication ID for expired medications.")
-              except ValueError:
-                 print("Invalid medication ID.")
-            else:
-                cli_edit_medication()
+             if not expiry_alerts["expired"]: # call edit logic when no expired meds, and prompt for id
+                 cli_edit_medication()
+
         elif choice == "4":
             cli_delete_medication()
         elif choice =="5":
