@@ -36,7 +36,8 @@ class MedicationTrackerApp:
 
         location = input("Enter location: ")
         notes = input("Enter notes (optional, press Enter to skip): ")
-        self.db.add_medication(brand_name, medication_name, expiry_date_str, location, notes if notes else None)
+        self.db.add_medication(brand_name, medication_name,
+                               expiry_date_str, location, notes if notes else None)
 
     def cli_edit_medication(self, medication_id=None, expired_medications=None):
         """Interactively prompts the user to edit an existing medication."""
@@ -62,9 +63,12 @@ class MedicationTrackerApp:
         print(f"  Location: {medication[4]}")
         print(f"  Notes: {medication[5] if medication[5] else 'No notes'}")
 
-        brand_name = input(f"Enter new brand name (leave empty to keep '{medication[1]}'): ") or medication[1]
-        medication_name = input(f"Enter new medication name (leave empty to keep '{medication[2]}'): ") or medication[2]
-        expiry_date_str = input(f"Enter new expiry date (YYYY/MM, leave empty to keep '{medication[3]}'): ") or medication[3]
+        brand_name = input(f"Enter new brand name (leave empty to keep '{
+                           medication[1]}'): ") or medication[1]
+        medication_name = input(f"Enter new medication name (leave empty to keep '{
+                                medication[2]}'): ") or medication[2]
+        expiry_date_str = input(
+            f"Enter new expiry date (YYYY/MM, leave empty to keep '{medication[3]}'): ") or medication[3]
 
         # Input validation for date format
         try:
@@ -74,11 +78,14 @@ class MedicationTrackerApp:
             print("Invalid date format. Please use YYYY/MM.")
             return
 
-        location = input(f"Enter new location (leave empty to keep '{medication[4]}'): ") or medication[4]
-        notes = input(f"Enter new notes (leave empty to keep '{medication[5] if medication[5] else ''}'): ")
+        location = input(f"Enter new location (leave empty to keep '{
+                         medication[4]}'): ") or medication[4]
+        notes = input(f"Enter new notes (leave empty to keep '{
+                      medication[5] if medication[5] else ''}'): ")
         notes = notes if notes else (medication[5] if medication[5] else None)
 
-        self.db.update_medication(medication_id, brand_name, medication_name, expiry_date_str, location, notes)
+        self.db.update_medication(
+            medication_id, brand_name, medication_name, expiry_date_str, location, notes)
 
     def cli_delete_medication(self):
         """Interactively prompts the user to delete a medication."""
@@ -95,7 +102,8 @@ class MedicationTrackerApp:
             print("Medication not found.")
             return
 
-        confirmation = input(f"Are you sure you want to delete {medication[2]}? (y/n): ")
+        confirmation = input(f"Are you sure you want to delete {
+                             medication[2]}? (y/n): ")
         if confirmation.lower() == 'y':
             self.db.delete_medication(medication_id)
         else:
@@ -138,7 +146,8 @@ class MedicationTrackerApp:
                 closest_expiry_date = expiry_date
                 closest_expiry_meds = [medication]  # new min date, reset list
             elif expiry_date == closest_expiry_date:
-                closest_expiry_meds.append(medication)  # same min date, append to the list
+                # same min date, append to the list
+                closest_expiry_meds.append(medication)
 
         return {
             "expired": expired_meds,
@@ -150,25 +159,30 @@ class MedicationTrackerApp:
     def display_alerts(self, expiry_alerts):
         """Displays the alerts."""
         if expiry_alerts["expired"]:
-            print("Alert: The following medications have expired today. Please edit or delete:")
+            print(
+                "Alert: The following medications have expired today. Please edit or delete:")
             for med in expiry_alerts["expired"]:
-                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+                print(f"   - ID:{med[0]}, Brand:{med[1]
+                                                 }, Med:{med[2]}, Expiry:{med[3]}")
             print("You must edit or delete these medications before adding new ones.")
 
         if expiry_alerts["expiring_in_one_month"]:
             print("Alert: The following medication(s) expire within the next month:")
             for med in expiry_alerts["expiring_in_one_month"]:
-                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+                print(f"   - ID:{med[0]}, Brand:{med[1]
+                                                 }, Med:{med[2]}, Expiry:{med[3]}")
 
         if expiry_alerts["expiring_in_two_months"]:
             print("Alert: The following medication(s) expire within the next two months:")
             for med in expiry_alerts["expiring_in_two_months"]:
-                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+                print(f"   - ID:{med[0]}, Brand:{med[1]
+                                                 }, Med:{med[2]}, Expiry:{med[3]}")
 
         if expiry_alerts["closest_expiry"] and not expiry_alerts["expiring_in_one_month"] and not expiry_alerts["expiring_in_two_months"]:
             print("Alert: The following medication(s) have the soonest expiry date:")
             for med in expiry_alerts["closest_expiry"]:
-                print(f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}")
+                print(f"   - ID:{med[0]}, Brand:{med[1]
+                                                 }, Med:{med[2]}, Expiry:{med[3]}")
 
         if not expiry_alerts["expired"] and not expiry_alerts["expiring_in_one_month"] and not expiry_alerts["expiring_in_two_months"] and not expiry_alerts["closest_expiry"]:
             print("No medications found or no valid expiry dates.")
@@ -183,7 +197,8 @@ class MedicationTrackerApp:
     def handle_edit_medication(self, expiry_alerts):
         """Handles the edit medication logic"""
         if expiry_alerts["expired"]:
-            med_id_str = input("Enter the ID of the expired medication to edit: ")
+            med_id_str = input(
+                "Enter the ID of the expired medication to edit: ")
             try:
                 med_id = int(med_id_str)
                 # Check if medication_id is in expired_medications
@@ -230,8 +245,14 @@ class MedicationTrackerApp:
                 else:
                     print("Invalid choice. Please try again.")
 
-        # Start scheduler in a separate thread. This is key to run the scheduler in the background
+        # Start scheduler in a separate thread.
+        # This is key to run the scheduler in the background
         # and not halt the application
+        # scheduler_thread = threading.Thread(target=self.scheduler.run_schedule, daemon=True)
+        # scheduler_thread.start()
+
+        self.send_monthly_alert()  # added a test line here
+
         main_loop()
 
 
