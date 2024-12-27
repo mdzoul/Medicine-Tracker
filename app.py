@@ -248,10 +248,8 @@ class MedicationTrackerApp:
         # Start scheduler in a separate thread.
         # This is key to run the scheduler in the background
         # and not halt the application
-        # scheduler_thread = threading.Thread(target=self.scheduler.run_schedule, daemon=True)
-        # scheduler_thread.start()
-
-        self.send_monthly_alert()  # added a test line here
+        scheduler_thread = threading.Thread(target=self.scheduler.run_schedule, daemon=True)
+        scheduler_thread.start()
 
         main_loop()
 

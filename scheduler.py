@@ -1,9 +1,20 @@
+import schedule
+import time
+import threading
+
+
 class Scheduler:
     """Manages the scheduled execution of tasks."""
 
     def __init__(self, job_function):
-        pass  # empty, no functionality here
+        self.job_function = job_function
 
     def run_schedule(self):
         """runs the schedule"""
-        print("Scheduler will not run - functionality to be added")
+
+        # schedule.every().month.at("10:00").do(self.job_function)  # runs every month at 10:00 am
+        schedule.every().hour.do(self.job_function)  # this is a test run
+        schedule.every().monday.at("09:00").do(self.job_function)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
