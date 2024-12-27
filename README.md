@@ -1,4 +1,4 @@
-`# Medication Tracker CLI
+# Medication Tracker CLI
 
 A command-line application for managing and tracking medications, including expiry dates, with prioritized alerts and fuzzy search capabilities, and monthly Telegram notifications.
 
@@ -77,7 +77,7 @@ Before using the app, ensure you have set up the following:
 
 **Optional**
 
-* You can also use environment variables for local testing. Add the same secrets mentioned above to your local environment to test the Telegram alerts.
+- You can also use environment variables for local testing. Add the same secrets mentioned above to your local environment to test the Telegram alerts.
 
 ## Running the Scheduled Alerts
 
