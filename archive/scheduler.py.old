@@ -13,8 +13,9 @@ class Scheduler:
         """runs the schedule"""
 
         # schedule.every().month.at("10:00").do(self.job_function)  # runs every month at 10:00 am
-        schedule.every().hour.do(self.job_function)  # this is a test run
+        schedule.every().hour.at(":22").do(self.job_function)  # this is a test run
         schedule.every().monday.at("09:00").do(self.job_function)
+        schedule.every().minutes.do(self.job_function)
         while True:
             schedule.run_pending()
             time.sleep(1)
