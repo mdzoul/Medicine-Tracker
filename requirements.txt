@@ -1,3 +1,2 @@
-twilio
 python-dateutil
-schedule
+python-telegram-bot
