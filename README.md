@@ -1,6 +1,6 @@
-# Medication Tracker CLI
+`# Medication Tracker CLI
 
-A command-line application for managing and tracking medications, including expiry dates, with prioritized alerts and fuzzy search capabilities.
+A command-line application for managing and tracking medications, including expiry dates, with prioritized alerts and fuzzy search capabilities, and monthly Telegram notifications.
 
 ## Table of Contents
 
@@ -9,17 +9,18 @@ A command-line application for managing and tracking medications, including expi
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
+- [Running the Scheduled Alerts](#running-the-scheduled-alerts)
 - [Future Enhancements](#future-enhancements)
 - [Contributors](#contributors)
 
 ## Introduction
 
-Medication Tracker CLI is a command-line tool designed to help users effectively manage their medications and keep track of expiry dates. It provides a simple and proactive approach to medication management, ensuring users prioritize expired medications and are notified of upcoming expiries, and also a fast way to access the information through the CLI.
+Medication Tracker CLI is a command-line tool designed to help users effectively manage their medications and keep track of expiry dates. It provides a simple and proactive approach to medication management, ensuring users prioritize expired medications, are notified of upcoming expiries, and also offers a fast way to access the information through the CLI. This version is now decoupled, separating the medication management from the monthly alerts.
 
 ## Features
 
-- **Command-Line Interface (CLI):**
-   An easy-to-use text-based interface for managing medications.
+-   **Command-Line Interface (CLI):**
+    An easy-to-use text-based interface for managing medications.
 -   **Medication Management:**
     -   Add new medication entries, including brand name, medication name, expiry date (YYYY/MM), location, and optional notes.
     -   View all medication records in a structured list.
@@ -30,13 +31,13 @@ Medication Tracker CLI is a command-line tool designed to help users effectively
     -   Then displays an alert for medications expiring within the next month.
     -   Then displays an alert for medications expiring within the next two months.
     -   If none of the above is true, displays an alert for the medication(s) with the soonest expiry date.
-- **Fuzzy Search:**
-    - Allows partial-match searching by brand name and medication name using regular expressions.
+-   **Fuzzy Search:**
+    -   Allows partial match searching by brand name and medication name using regular expressions.
 -   **Modular Codebase:**
     -   The codebase has been refactored using classes, in separate files, for better organization, maintainability and extensibility.
 -   **Database Persistence:** Utilizes SQLite for local storage of medication data, ensuring data persistence across sessions.
--   **Background WhatsApp Alerts**
-    - Sends scheduled monthly WhatsApp alerts with the status of the medication expiries.
+-   **Telegram Notifications:**
+    - Sends scheduled monthly Telegram alerts with the status of the medication expiries.
 
 ## Installation
 
@@ -57,10 +58,10 @@ To install and run the Medication Tracker CLI, follow these steps:
 
 ## Usage
 
-To run the Medication Tracker CLI, execute the script from your terminal:
+To interact with the medication management, run the following script from your terminal:
 
 ```sh
-python med_tracker.py
+python med_tracker_app.py
 ```
 
 This application will then show you a menu that you can navigate by typing numbers.
@@ -69,18 +70,24 @@ This application will then show you a menu that you can navigate by typing numbe
 
 Before using the app, ensure you have set up the following:
 
-- Twilio Account: Create a free Twilio account at [https://www.twilio.com/](https://www.twilio.com/).
-- Twilio Phone Number: Get a Twilio phone number that is WhatsApp enabled.
-- WhatsApp Sandbox: Connect your personal WhatsApp number to the Twilio sandbox.
-- Twilio Credentials: Add the following as repository secrets in the "Settings > Secrets > Actions" section of your GitHub repository:
-    - `TWILIO_ACCOUNT_SID`
-    - `TWILIO_AUTH_TOKEN`
-    - `TWILIO_PHONE_NUMBER`
-    - `WHATSAPP_TO_NUMBER`
+-   **Telegram Bot:** Create a Telegram bot using BotFather, and save the bot's API token and your chat id.
+-   **Telegram Credentials:** Add the following as **repository secrets** in the "Settings > Secrets > Actions" section of your GitHub repository:
+    - `TELEGRAM_BOT_TOKEN`
+    - `TELEGRAM_CHAT_ID`
 
 **Optional**
 
-- You can also use environment variables for local testing. Add the same secrets mentioned above to your local environment to test the Twilio logic.
+* You can also use environment variables for local testing. Add the same secrets mentioned above to your local environment to test the Telegram alerts.
+
+## Running the Scheduled Alerts
+
+The monthly alerts are handled by a separate script and can be triggered by using a scheduling system provided by services such as PythonAnywhere or similar.
+
+To send the alerts, execute the following script in your schedule:
+
+```sh
+python med_tracker_alerts.py
+```
 
 ## Future Enhancements
 
