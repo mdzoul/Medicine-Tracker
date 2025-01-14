@@ -397,11 +397,7 @@ class MedicationTrackerApp:
         """Runs the main telegram bot loop"""
         self.db.create_database()
 
-        application = (
-            Application.builder()
-            .token("7924544288:AAFmv6P-OhHTWX1cVdR05iYKdabHtUs6gus")
-            .build()
-        )
+        application = Application.builder().token("TELEGRAM_BOT_TOKEN").build()
 
         application.add_handler(CommandHandler("start", self.handle_start))
         application.add_handler(CommandHandler("help", self.handle_help))
