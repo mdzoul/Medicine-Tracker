@@ -1,5 +1,13 @@
-import sqlite3
+"""
+This module provides a class to handle all interactions with
+the medication database.
+It uses SQLite to store and retrieve medication information.
+The class provides methods to create the database, add, view, edit,
+and delete medication records.
+"""
+
 import re
+import sqlite3
 
 
 class MedicationDatabase:
@@ -22,7 +30,8 @@ class MedicationDatabase:
     def create_database(self):
         """Creates the database and the medications table if they don't exist."""
         with self as db:
-            db.cursor.execute("""
+            db.cursor.execute(
+                """
                 CREATE TABLE IF NOT EXISTS medications (
                     medication_id INTEGER PRIMARY KEY AUTOINCREMENT,
                     brand_name TEXT NOT NULL,
@@ -31,17 +40,23 @@ class MedicationDatabase:
                     location TEXT NOT NULL,
                     notes TEXT
                 )
-            """)
+            """
+            )
             db.conn.commit()
             print("Database created/connected.")
 
-    def add_medication(self, brand_name, medication_name, expiry_date, location, notes=None):
+    def add_medication(
+        self, brand_name, medication_name, expiry_date, location, notes=None
+    ):
         """Adds a new medication to the database."""
         with self as db:
-            db.cursor.execute("""
+            db.cursor.execute(
+                """
                 INSERT INTO medications (brand_name, medication_name, expiry_date, location, notes)
                 VALUES (?, ?, ?, ?, ?)
-             """, (brand_name, medication_name, expiry_date, location, notes))
+             """,
+                (brand_name, medication_name, expiry_date, location, notes),
+            )
             db.conn.commit()
             print("Medication added successfully.")
 
@@ -89,14 +104,19 @@ class MedicationDatabase:
     def get_medication_by_id(self, medication_id):
         """Fetches a medication by its ID."""
         with self as db:
-            db.cursor.execute("SELECT * FROM medications WHERE medication_id = ?", (medication_id,))
+            db.cursor.execute(
+                "SELECT * FROM medications WHERE medication_id = ?", (medication_id,)
+            )
             medication = db.cursor.fetchone()
             return medication
 
-    def update_medication(self, medication_id, brand_name, medication_name, expiry_date, location, notes):
+    def update_medication(
+        self, medication_id, brand_name, medication_name, expiry_date, location, notes
+    ):
         """Updates an existing medication in the database."""
         with self as db:
-            db.cursor.execute("""
+            db.cursor.execute(
+                """
                 UPDATE medications
                 SET brand_name = ?,
                     medication_name = ?,
@@ -104,13 +124,24 @@ class MedicationDatabase:
                     location = ?,
                     notes = ?
                 WHERE medication_id = ?
-            """, (brand_name, medication_name, expiry_date, location, notes, medication_id))
+            """,
+                (
+                    brand_name,
+                    medication_name,
+                    expiry_date,
+                    location,
+                    notes,
+                    medication_id,
+                ),
+            )
             db.conn.commit()
             print("Medication updated successfully.")
 
     def delete_medication(self, medication_id):
         """Deletes a medication from the database."""
         with self as db:
-            db.cursor.execute("DELETE FROM medications WHERE medication_id = ?", (medication_id,))
+            db.cursor.execute(
+                "DELETE FROM medications WHERE medication_id = ?", (medication_id,)
+            )
             db.conn.commit()
             print("Medication deleted successfully.")

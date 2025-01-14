@@ -1,3 +1,9 @@
+"""
+This module handles sending notifications using Telegram.
+It uses the python-telegram-bot library to connect to Telegram's API
+and send messages.
+"""
+
 import asyncio
 import datetime
 import sqlite3
@@ -9,16 +15,23 @@ from notifier import TelegramNotifier
 
 
 def notify():
+    """
+    Orchestrates the process of fetching medication expiry alerts
+    and sending them via Telegram
+    """
     db = MedicationDatabase()
     notifier = TelegramNotifier()
 
     async def send_alerts():
         """Sends all the telegram alerts"""
         expiry_alerts = get_expiry_alerts()
-        await notifier.send_telegram_alert(expiry_alerts)  # run the async function
+        await notifier.send_telegram_alert(expiry_alerts)
 
     def get_expiry_alerts():
-        """Gets medications with the closest expiry date, within one month, and within two months."""
+        """
+        Gets medications with the closest expiry date, within one month,
+        and within two months.
+        """
         conn = sqlite3.connect(db.db_name)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM medications")

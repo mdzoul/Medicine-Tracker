@@ -1,3 +1,9 @@
+"""
+This module handles sending notifications using Telegram.
+It uses the python-telegram-bot library to connect to Telegram's API, 
+handle incoming messages, and send messages.
+"""
+
 import os
 
 from dotenv import load_dotenv
