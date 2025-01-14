@@ -8,7 +8,7 @@ from database import MedicationDatabase
 from notifier import TelegramNotifier
 
 
-def main():
+def notify():
     db = MedicationDatabase()
     notifier = TelegramNotifier()
 
@@ -67,4 +67,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    notify()
