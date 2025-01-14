@@ -19,25 +19,25 @@ Medication Tracker CLI is a command-line tool designed to help users effectively
 
 ## Features
 
--   **Command-Line Interface (CLI):**
-    An easy-to-use text-based interface for managing medications.
--   **Medication Management:**
-    -   Add new medication entries, including brand name, medication name, expiry date (YYYY/MM), location, and optional notes.
-    -   View all medication records in a structured list.
-    -   Edit existing medication entries based on their IDs.
-    -   Delete medication records.
--   **Prioritized Expiry Alerts:**
-    -   Displays an alert for medications that have expired today first.
-    -   Then displays an alert for medications expiring within the next month.
-    -   Then displays an alert for medications expiring within the next two months.
-    -   If none of the above is true, displays an alert for the medication(s) with the soonest expiry date.
--   **Fuzzy Search:**
-    -   Allows partial match searching by brand name and medication name using regular expressions.
--   **Modular Codebase:**
-    -   The codebase has been refactored using classes, in separate files, for better organization, maintainability and extensibility.
--   **Database Persistence:** Utilizes SQLite for local storage of medication data, ensuring data persistence across sessions.
--   **Telegram Notifications:**
-    - Sends scheduled monthly Telegram alerts with the status of the medication expiries.
+- **Command-Line Interface (CLI):**
+  An easy-to-use text-based interface for managing medications.
+- **Medication Management:**
+  - Add new medication entries, including brand name, medication name, expiry date (YYYY/MM), location, and optional notes.
+  - View all medication records in a structured list.
+  - Edit existing medication entries based on their IDs.
+  - Delete medication records.
+- **Prioritized Expiry Alerts:**
+  - Displays an alert for medications that have expired today first.
+  - Then displays an alert for medications expiring within the next month.
+  - Then displays an alert for medications expiring within the next two months.
+  - If none of the above is true, displays an alert for the medication(s) with the soonest expiry date.
+- **Fuzzy Search:**
+  - Allows partial match searching by brand name and medication name using regular expressions.
+- **Modular Codebase:**
+  - The codebase has been refactored using classes, in separate files, for better organization, maintainability and extensibility.
+- **Database Persistence:** Utilizes SQLite for local storage of medication data, ensuring data persistence across sessions.
+- **Telegram Notifications:**
+  - Sends scheduled monthly Telegram alerts with the status of the medication expiries.
 
 ## Installation
 
@@ -51,7 +51,7 @@ To install and run the Medication Tracker CLI, follow these steps:
     ```sh
     cd medicine-tracker
     ```
-3. Install the required dependencies:
+3.  Install the required dependencies:
     ```sh
     pip install -r requirements.txt
     ```
@@ -61,33 +61,14 @@ To install and run the Medication Tracker CLI, follow these steps:
 To interact with the medication management, run the following script from your terminal:
 
 ```sh
-python med_tracker_app.py
+python main.py
 ```
 
 This application will then show you a menu that you can navigate by typing numbers.
 
 ## Configuration
 
-Before using the app, ensure you have set up the following:
-
--   **Telegram Bot:** Create a Telegram bot using BotFather, and save the bot's API token and your chat id.
--   **Telegram Credentials:** Add the following as **repository secrets** in the "Settings > Secrets > Actions" section of your GitHub repository:
-    - `TELEGRAM_BOT_TOKEN`
-    - `TELEGRAM_CHAT_ID`
-
-**Optional**
-
-- You can also use environment variables for local testing. Add the same secrets mentioned above to your local environment to test the Telegram alerts.
-
-## Running the Scheduled Alerts
-
-The monthly alerts are handled by a separate script and can be triggered by using a scheduling system provided by services such as PythonAnywhere or similar.
-
-To send the alerts, execute the following script in your schedule:
-
-```sh
-python med_tracker_alerts.py
-```
+The application will use the `medications.db` file to store all the information of your medications.
 
 ## Future Enhancements
 
@@ -100,4 +81,3 @@ The following features are currently planned for future enhancements:
 ## Contributors
 
 - [Zoul Aimi](https://github.com/mdzoul) - Creator and main contributor
-
