@@ -1,5 +1,6 @@
 """
 This module manages the core application logic for the Medication Tracker Web App.
+
 It sets up the database connection, manages user interactions, displays alerts,
 and handles the routing of web requests. It uses Flask to render the different pages
 and the database to save and retrieve all data.
@@ -71,7 +72,7 @@ def index():
     sort_by = request.args.get("sort_by", "expiry_date")
     sort_order = request.args.get("sort_order", "asc")
     page = request.args.get("page", 1, type=int)
-    per_page = 10
+    per_page = 20
 
     with db as db_conn:
         query = "SELECT * FROM medications"

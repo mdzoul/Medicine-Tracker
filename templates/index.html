@@ -97,10 +97,10 @@
             <label for="medication_name">Medication Name:</label><br>
             <input type="text" id="medication_name" name="medication_name" required><br>
 
-            <label for="expiry_date">Expiry Date (YYYY/MM):</label><br>
+            <label for="expiry_date">Expiry Date (YYYY/MM) (comma separated for multiple):</label><br>
             <input type="text" id="expiry_date" name="expiry_date" required><br>
 
-            <label for="location">Location:</label><br>
+            <label for="location">Location(comma separated for multiple):</label><br>
             <input type="text" id="location" name="location"><br>
 
             <label for="notes">Notes:</label><br>
@@ -145,13 +145,15 @@
             {% for medication in medications %}
             <tr
                 class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% endif %}">
-                <td>{{ medication[1] }}</td>
-                <td>{{ medication[2] }}</td>
-                <td>{{ medication[3] }}</td>
-                <td>{{ medication[4] }}</td>
-                <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
+                <td data-field="brand_name" data-value="{{ medication[1] }}">{{ medication[1] }}</td>
+                <td data-field="medication_name" data-value="{{ medication[2] }}">{{ medication[2] }}</td>
+                <td data-field="expiry_date" data-value="{{ medication[3] }}">{{ medication[3] }}</td>
+                <td data-field="location" data-value="{{ medication[4] }}">{{ medication[4] }}</td>
+                <td data-field="notes" data-value="{{ medication[5] if medication[5] else '' }}">{{ medication[5] if
+                    medication[5] else 'No Notes' }}</td>
                 <td>
-                    <a href="/edit/{{medication[0]}}"><button>Edit</button></a>
+                    <a
+                        href="/edit/{{medication[0]}}?sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}&page={{page}}"><button>Edit</button></a>
                 </td>
             </tr>
             {% endfor %}
