@@ -37,6 +37,10 @@
             background-color: #f0e68c;
         }
 
+        .currentyear {
+            background-color: lightgreen;
+        }
+
         .hidden {
             display: none;
         }
@@ -84,13 +88,14 @@
 
     <h2>Medication Tracker Menu</h2>
     <button id="add-med-button">Add Medication</button>
-    <br><br>
+    <br>
+    {% if brand_name_error %}
+    <p style="color: red;">{{ brand_name_error }}</p>
+    {% endif %}
+    <br>
 
     <div id="add-med-form" class="hidden">
         <form method="post">
-            {% if brand_name_error %}
-            <p style="color: red;">{{ brand_name_error }}</p>
-            {% endif %}
             <label for="brand_name">Brand Name:</label><br>
             <input type="text" id="brand_name" name="brand_name" required><br>
 
@@ -144,7 +149,7 @@
         <tbody>
             {% for medication in medications %}
             <tr
-                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% endif %}">
+                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
                 <td data-field="brand_name" data-value="{{ medication[1] }}">{{ medication[1] }}</td>
                 <td data-field="medication_name" data-value="{{ medication[2] }}">{{ medication[2] }}</td>
                 <td data-field="expiry_date" data-value="{{ medication[3] }}">{{ medication[3] }}</td>

@@ -111,7 +111,7 @@ def index():
             )
             existing_med = db_conn.cursor.fetchone()
             if existing_med:
-                brand_name_error = "A medication with this brand name already exists"
+                brand_name_error = f"A medication with this brand name already exists: {existing_med[1]}"
             else:
                 db.add_medication(
                     brand_name,
@@ -141,6 +141,7 @@ def index():
         db=db,
         page=page,
         total_pages=total_pages,
+        now=datetime.date.today(),
     )
 
 
@@ -148,7 +149,7 @@ def index():
 def medications():
     db = MedicationDatabase()
     search_term = request.args.get("search_term", "")
-    sort_by = request.args.get("sort_by", "medication_id")
+    sort_by = request.args.get("sort_by", "brand_name")
     sort_order = request.args.get("sort_order", "asc")
 
     with db as db_conn:
@@ -179,6 +180,7 @@ def medications():
         sort_order=sort_order,
         expiry_alerts=expiry_alerts,
         db=db,
+        now=datetime.date.today(),
     )
 
 

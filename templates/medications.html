@@ -36,6 +36,18 @@
         .expiring {
             background-color: #f0e68c;
         }
+
+        .currentyear {
+            background-color: lightgreen;
+        }
+
+        .alert-red {
+            background-color: #efb9b9;
+        }
+
+        .alert-yellow {
+            background-color: #f0e68c;
+        }
     </style>
 </head>
 
@@ -43,21 +55,24 @@
     <h2>Medication List</h2>
     {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
     or expiry_alerts['closest_expiry'] %}
-    <div style="color: red;">
+    <a href="/"><button>Back to Medicine Tracker Menu</button></a>
+    <div class="alert-red">
         {% if expiry_alerts['expired'] %}
         <p><strong>Expired Medications:</strong></p>
         <ul>
             {% for med in expiry_alerts['expired'] %}
-            <li> Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a>
             </li>
             {% endfor %}
         </ul>
         {% endif %}
+    </div>
+    <div class="alert-yellow">
         {% if expiry_alerts['expiring_in_one_month'] %}
         <p><strong>Expiring in one month:</strong></p>
         <ul>
             {% for med in expiry_alerts['expiring_in_one_month'] %}
-            <li>Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -65,7 +80,7 @@
         <p><strong>Expiring in two months:</strong></p>
         <ul>
             {% for med in expiry_alerts['expiring_in_two_months'] %}
-            <li> Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -113,7 +128,7 @@
         <tbody>
             {% for medication in medications %}
             <tr
-                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% endif %}">
+                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
                 <td>{{ medication[1] }}</td>
                 <td>{{ medication[2] }}</td>
                 <td>{{ medication[3] }}</td>
