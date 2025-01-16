@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Medication</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .expired {
+            background-color: #efb9b9;
+        }
+
+        .expiring {
+            background-color: #f0e68c;
+        }
+    </style>
+</head>
+
+<body>
+    {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
+    or expiry_alerts['closest_expiry'] %}
+    <div style="color: red;">
+        {% if expiry_alerts['expired'] %}
+        <p><strong>Expired Medications:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expired'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_one_month'] %}
+        <p><strong>Expiring in one month:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_one_month'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Expiring in two months:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_two_months'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['closest_expiry'] and not expiry_alerts['expiring_in_one_month'] and not
+        expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Soonest Expiry:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['closest_expiry'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+    <h2>Edit Medication</h2>
+    <form method="post">
+        <table>
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Current Value</th>
+                    <th>New Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Brand Name</td>
+                    <td>{{ medication[1] }}</td>
+                    <td><input type="text" name="brand_name" value="{{ medication[1] }}" required></td>
+                </tr>
+                <tr>
+                    <td>Medication Name</td>
+                    <td>{{ medication[2] }}</td>
+                    <td><input type="text" name="medication_name" value="{{ medication[2] }}" required></td>
+                </tr>
+                <tr>
+                    <td>Expiry Date (YYYY/MM)</td>
+                    <td>{{ medication[3] }}</td>
+                    <td><input type="text" name="expiry_date" value="{{ medication[3] }}" placeholder="YYYY/MM"
+                            required></td>
+                </tr>
+                <tr>
+                    <td>Location</td>
+                    <td>{{ medication[4] }}</td>
+                    <td><input type="text" name="location" value="{{ medication[4] }}"></td>
+                </tr>
+                <tr>
+                    <td>Notes</td>
+                    <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
+                    <td><textarea name="notes">{{ medication[5] if medication[5] else '' }}</textarea></td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <button type="submit" onclick="return confirm('Are you sure you want to save the changes?');">Confirm</button>
+        <button type="button" onclick="window.location.href='/'">Cancel</button>
+    </form>
+</body>
+
+</html>

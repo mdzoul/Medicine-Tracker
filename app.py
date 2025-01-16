@@ -118,6 +118,7 @@ def index():
                         sort_by=sort_by,
                         search_term=search_term,
                         sort_order=sort_order,
+                        page=1,
                     )
                 )
 
@@ -196,13 +197,17 @@ def edit_medication(medication_id):
         )
         return redirect(
             url_for(
-                "index", sort_by=sort_by, search_term=search_term, sort_order=sort_order
+                "index",
+                sort_by=request.args.get("sort_by", "expiry_date"),
+                search_term=request.args.get("search_term", ""),
+                sort_order=request.args.get("sort_order", "asc"),
+                page=request.args.get("page", 1, type=int),
             )
         )  # redirect to the index once you have finished
 
     expiry_alerts = get_expiry_alerts(db)
     return render_template(
-        "index.html", medication=medication, expiry_alerts=expiry_alerts, db=db
+        "edit.html", medication=medication, expiry_alerts=expiry_alerts, db=db
     )
 
 
