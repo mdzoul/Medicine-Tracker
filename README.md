@@ -54,7 +54,7 @@ To install and run the Medication Tracker CLI, follow these steps:
     ```sh
     pip install -r requirements.txt
     ```
-4.  **Add Your CSV File:** Place your medication data in a CSV file named `BCStockExpiry.csv` in the root folder of the project. Make sure the file has the following headings: `Brand`, `Name`, `Expiry`, `Location`, and `Notes`.
+4.  **Add Your CSV File:** Place your medication data in a CSV file in the root folder of the project. Make sure the file has the following headings: `Brand`, `Name`, `Expiry`, `Location`, and `Notes`.
 5.  **Configure `runmefirst.py`**: Update the `runmefirst.py` file and set the name of your CSV file in this line: `CSV_FILENAME = "your_csv_file.csv"`.
 6.  **Create and populate the database:** Run the following script to create and populate `medications.db`
     ```sh
