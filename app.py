@@ -1,3 +1,10 @@
+"""
+This module manages the core application logic for the Medication Tracker Web App.
+It sets up the database connection, manages user interactions, displays alerts,
+and handles the routing of web requests. It uses Flask to render the different pages
+and the database to save and retrieve all data.
+"""
+
 import datetime
 import re
 import sqlite3
