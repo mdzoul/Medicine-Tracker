@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Medication Tracker</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
+    or expiry_alerts['closest_expiry'] %}
+    <div style="color: red;">
+        {% if expiry_alerts['expired'] %}
+        <p><strong>Expired Medications:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expired'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_one_month'] %}
+        <p><strong>Expiring in one month:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_one_month'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Expiring in two months:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_two_months'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['closest_expiry'] and not expiry_alerts['expiring_in_one_month'] and not
+        expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Soonest Expiry:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['closest_expiry'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <h2>Medication Tracker Menu</h2>
+    <button id="add-med-button">Add Medication</button>
+    <br><br>
+    <a href="/medications"><button>View Medications</button></a>
+
+    <div id="add-med-form" class="hidden">
+        <form method="post">
+            {% if brand_name_error %}
+            <p style="color: red;">{{ brand_name_error }}</p>
+            {% endif %}
+            <label for="brand_name">Brand Name:</label><br>
+            <input type="text" id="brand_name" name="brand_name" required><br>
+
+            <label for="medication_name">Medication Name:</label><br>
+            <input type="text" id="medication_name" name="medication_name" required><br>
+
+            <label for="expiry_date">Expiry Date (YYYY/MM):</label><br>
+            <input type="text" id="expiry_date" name="expiry_date" required><br>
+
+            <label for="location">Location:</label><br>
+            <input type="text" id="location" name="location"><br>
+
+            <label for="notes">Notes:</label><br>
+            <textarea id="notes" name="notes"></textarea><br><br>
+
+            <input type="submit" value="Add Medication" {% if brand_name_error %}disabled{% endif %}>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("add-med-button").addEventListener("click", function () {
+            var form = document.getElementById("add-med-form");
+            form.classList.toggle("hidden");
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Medication List</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .expired {
+            background-color: #efb9b9;
+        }
+
+        .expiring {
+            background-color: #f0e68c;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Medication List</h2>
+    {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
+    or expiry_alerts['closest_expiry'] %}
+    <div style="color: red;">
+        {% if expiry_alerts['expired'] %}
+        <p><strong>Expired Medications:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expired'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_one_month'] %}
+        <p><strong>Expiring in one month:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_one_month'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Expiring in two months:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['expiring_in_two_months'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% if expiry_alerts['closest_expiry'] and not expiry_alerts['expiring_in_one_month'] and not
+        expiry_alerts['expiring_in_two_months'] %}
+        <p><strong>Soonest Expiry:</strong></p>
+        <ul>
+            {% for med in expiry_alerts['closest_expiry'] %}
+            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endif %}
+    <form method="get">
+        <input type="text" name="search_term" placeholder="Search by Brand, Name or Location"
+            value="{{ search_term if search_term else ''}}">
+        <label for="sort_by">Sort by:</label>
+        <select name="sort_by" id="sort_by">
+            <option value="medication_id" {% if sort_by=="medication_id" %}selected{% endif %}>ID</option>
+            <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
+            <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication Name
+            </option>
+            <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
+            <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
+        </select>
+        <label for="sort_order">Order:</label>
+        <select name="sort_order" id="sort_order">
+            <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
+            <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
+        </select>
+        <button type="submit">Apply Filter and Sorting</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Brand Name</th>
+                <th>Medication Name</th>
+                <th>Expiry Date</th>
+                <th>Location</th>
+                <th>Notes</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medication in medications %}
+            <tr
+                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% endif %}">
+                <td>{{ medication[0] }}</td>
+                <td>{{ medication[1] }}</td>
+                <td>{{ medication[2] }}</td>
+                <td>{{ medication[3] }}</td>
+                <td>{{ medication[4] }}</td>
+                <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
+                <td> <a href="/edit/{{medication[0]}}"><button>Edit</button></a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
