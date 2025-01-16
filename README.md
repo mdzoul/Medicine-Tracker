@@ -40,37 +40,42 @@ Medication Tracker Web App is a web application designed to help users effective
 
 ## Installation
 
-To install and run the Medication Tracker Web App, follow these steps:
+To install and run the Medication Tracker CLI, follow these steps:
 
 1.  Clone the repository:
     ```sh
-    git clone https://github.com/mdzoul/medicine-tracker.git
+    git clone https://github.com/mdzoul/Medicine-Tracker.git
     ```
 2.  Navigate to the project directory:
     ```sh
-    cd medicine-tracker
+    cd Medicine-Tracker
     ```
 3.  Install the required dependencies:
     ```sh
     pip install -r requirements.txt
     ```
+4.  **Add Your CSV File:** Place your medication data in a CSV file named `BCStockExpiry.csv` in the root folder of the project. Make sure the file has the following headings: `Brand`, `Name`, `Expiry`, `Location`, and `Notes`.
+5.  **Configure `runmefirst.py`**: Update the `runmefirst.py` file and set the name of your CSV file in this line: `CSV_FILENAME = "your_csv_file.csv"`.
+6.  **Create and populate the database:** Run the following script to create and populate `medications.db`
+    ```sh
+    python runmefirst.py
+    ```
+7.  **Deploy the Webapp** Now your database is ready, and you can run the webapp.
+    ```sh
+    python app.py
+    ```
 
 ## Usage
 
-To run the Medication Tracker Web App, execute the script from your terminal:
-
-```sh
-python app.py
-```
-
-The application will then be available in your local host.
+To access the Medication Tracker, open your web browser and go to the URL specified in your terminal when the application starts (usually http://127.0.0.1:5000).
+The web application will present the medications in a table format, and you will be able to search, sort, add, edit and delete medications.
 
 ## Configuration
 
 Before using the app, ensure you have set up the following:
 
 - **Telegram Bot:** Create a Telegram bot using BotFather, and save the bot's API token and your chat id.
-- **Telegram Credentials:** Add the following as repository secrets in the "Settings > Secrets > Actions" section of your GitHub repository:
+- **Telegram Credentials:** Add the following as **repository secrets** in the "Settings > Secrets > Actions" section of your GitHub repository:
   - `TELEGRAM_BOT_TOKEN`
   - `TELEGRAM_CHAT_ID`
 
@@ -85,7 +90,7 @@ The monthly alerts are handled by a separate script and can be triggered by usin
 To send the alerts, execute the following script in your schedule:
 
 ```sh
-python med_tracker_alerts.py
+python alerts.py
 ```
 
 ## Future Enhancements
