@@ -1,2 +1,4 @@
+archive/
 .env
-medications.db
+*.db
+*.csv
