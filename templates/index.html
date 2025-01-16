@@ -4,77 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Medication Tracker</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .asc {
-            background-color: #c0efb9;
-        }
-
-        .desc {
-            background-color: #efb9b9;
-        }
-
-        .expired {
-            background-color: #efb9b9;
-        }
-
-        .expiring {
-            background-color: #f0e68c;
-        }
-
-        .currentyear {
-            background-color: lightgreen;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .alert-red {
-            background-color: #efb9b9;
-        }
-
-        .alert-yellow {
-            background-color: #f0e68c;
-        }
-
-        .pagination {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .pagination a {
-            display: inline-block;
-            padding: 8px 16px;
-            text-decoration: none;
-            border: 1px solid #ddd;
-            margin: 0 4px;
-        }
-
-        .pagination a.active {
-            background-color: #04AA6D;
-            color: white;
-            border: 1px solid #04AA6D;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
+    <h2>Medication Tracker Menu</h2>
     {% if expiry_alerts['expired'] %}
     <div class="alert-red">
         <p><strong>ALERT: There are expired medications. Please edit or delete.</strong></p>
@@ -86,96 +20,148 @@
     </div>
     {% endif %}
 
-    <h2>Medication Tracker Menu</h2>
-    <button id="add-med-button">Add Medication</button>
-    <br>
-    {% if brand_name_error %}
-    <p style="color: red;">{{ brand_name_error }}</p>
-    {% endif %}
-    <br>
+    <div class="container" style="text-align: center;">
 
-    <div id="add-med-form" class="hidden">
-        <form method="post">
-            <label for="brand_name">Brand Name:</label><br>
-            <input type="text" id="brand_name" name="brand_name" required><br>
+        <div id="search-med-form">
+            <form method="get">
+                <input id="search-med-input" type="text" name="search_term"
+                    placeholder="Search by Brand Name, Medication Name or Location"
+                    value="{{ search_term if search_term else ''}}">
+                <button id="search-med-button" style="width: auto">Search Medication</button>
+            </form>
+        </div>
 
-            <label for="medication_name">Medication Name:</label><br>
-            <input type="text" id="medication_name" name="medication_name" required><br>
+        <button id="sort-med-button">Sort Medications</button>
+        <button id="add-med-button">Add Medication</button>
+        <a href="/medications"><button>View All Medications</button></a>
 
-            <label for="expiry_date">Expiry Date (YYYY/MM) (comma separated for multiple):</label><br>
-            <input type="text" id="expiry_date" name="expiry_date" required><br>
+        <br>
+        {% if brand_name_error %}
+        <p style="color: red;">{{ brand_name_error }}</p>
+        {% endif %}
+        <br>
 
-            <label for="location">Location(comma separated for multiple):</label><br>
-            <input type="text" id="location" name="location"><br>
+        <div id="add-med-form" class="hidden">
+            <form method="post">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="brand_name">Brand Name:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="brand_name" name="brand_name" required><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="medication_name">Medication Name:</label>
+                        </td>
+                        <td>
+                            <input type="text" id="medication_name" name="medication_name" required><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="expiry_date">Expiry Date (YYYY/MM):</label>
+                        </td>
+                        <td>
+                            <input type="text" id="expiry_date" name="expiry_date" required><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="location">Location(s):</label>
+                        </td>
+                        <td>
+                            <input type="text" id="location" name="location"><br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="notes">Notes:</label>
+                        </td>
+                        <td>
+                            <textarea id="notes" name="notes"></textarea><br>
+                        </td>
+                    </tr>
+                </table>
+                <button type="submit" margin="auto" {% if brand_name_error %}disabled{% endif %}>Add</button>
+            </form>
+        </div>
 
-            <label for="notes">Notes:</label><br>
-            <textarea id="notes" name="notes"></textarea><br><br>
+        <div id="sort-med-form" class="hidden">
+            <form method="get" style="text-align: center;">
+                <label for="sort_by">Sort by:</label>
+                <select name="sort_by" id="sort_by">
+                    <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
+                    <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication
+                        Name
+                    </option>
+                    <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
+                    <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
+                </select>
+                <label for="sort_order">Order:</label>
+                <select name="sort_order" id="sort_order">
+                    <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
+                    <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
+                </select><br>
+                <button type="submit">Apply Filter</button>
+            </form>
+        </div>
 
-            <input type="submit" value="Add Medication" {% if brand_name_error %}disabled{% endif %}>
-        </form>
     </div>
 
-    <form method="get">
-        <input type="text" name="search_term" placeholder="Search by Brand, Name or Location"
-            value="{{ search_term if search_term else ''}}">
-        <label for="sort_by">Sort by:</label>
-        <select name="sort_by" id="sort_by">
-            <option value="medication_id" {% if sort_by=="medication_id" %}selected{% endif %}>ID</option>
-            <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
-            <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication Name
-            </option>
-            <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
-            <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
-        </select>
-        <label for="sort_order">Order:</label>
-        <select name="sort_order" id="sort_order">
-            <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
-            <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
-        </select>
-        <button type="submit">Apply Filter and Sorting</button>
-    </form>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Brand Name</th>
-                <th>Medication Name</th>
-                <th>Expiry Date</th>
-                <th>Location</th>
-                <th>Notes</th>
-                <th>Edit</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for medication in medications %}
-            <tr
-                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
-                <td data-field="brand_name" data-value="{{ medication[1] }}">{{ medication[1] }}</td>
-                <td data-field="medication_name" data-value="{{ medication[2] }}">{{ medication[2] }}</td>
-                <td data-field="expiry_date" data-value="{{ medication[3] }}">{{ medication[3] }}</td>
-                <td data-field="location" data-value="{{ medication[4] }}">{{ medication[4] }}</td>
-                <td data-field="notes" data-value="{{ medication[5] if medication[5] else '' }}">{{ medication[5] if
-                    medication[5] else 'No Notes' }}</td>
-                <td>
-                    <a
-                        href="/edit/{{medication[0]}}?sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}&page={{page}}"><button>Edit</button></a>
-                </td>
-            </tr>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Brand Name</th>
+                    <th>Medication Name</th>
+                    <th>Expiry Date</th>
+                    <th>Location</th>
+                    <th>Notes</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medication in medications %}
+                <tr
+                    class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
+                    <td data-field="brand_name" data-value="{{ medication[1] }}" style="text-align: center;">{{
+                        medication[1] }}</td>
+                    <td data-field="medication_name" data-value="{{ medication[2] }}">{{ medication[2] }}</td>
+                    <td data-field="expiry_date" data-value="{{ medication[3] }}" style="text-align: center;">{{
+                        medication[3] }}</td>
+                    <td data-field="location" data-value="{{ medication[4] }}" style="text-align: center;">{{
+                        medication[4]
+                        }}</td>
+                    <td data-field="notes" data-value="{{ medication[5] if medication[5] else '' }}">{{ medication[5] if
+                        medication[5] else 'No Notes' }}</td>
+                    <td>
+                        <a
+                            href="/edit/{{medication[0]}}?sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}&page={{page}}"><button
+                                style="width: auto;">Edit</button></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            {% for page_num in range(1, total_pages + 1) %}
+            <a href="?page={{ page_num }}&sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}" {%
+                if page==page_num %}class="active" {% endif %}>{{ page_num }}</a>
             {% endfor %}
-        </tbody>
-    </table>
-    <div class="pagination">
-        {% for page_num in range(1, total_pages + 1) %}
-        <a href="?page={{ page_num }}&sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}" {% if
-            page==page_num %}class="active" {% endif %}>{{ page_num }}</a>
-        {% endfor %}
+        </div>
     </div>
     <br>
-    <a href="/medications"><button>View All Medications in a separate page</button></a>
 
     <script>
         document.getElementById("add-med-button").addEventListener("click", function () {
             var form = document.getElementById("add-med-form");
+            form.classList.toggle("hidden");
+        });
+        document.getElementById("sort-med-button").addEventListener("click", function () {
+            var form = document.getElementById("sort-med-form");
             form.classList.toggle("hidden");
         });
     </script>

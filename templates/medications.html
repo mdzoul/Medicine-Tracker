@@ -4,141 +4,127 @@
 <head>
     <meta charset="UTF-8">
     <title>Medication List</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-        }
-
-        .asc {
-            background-color: #c0efb9;
-        }
-
-        .desc {
-            background-color: #efb9b9;
-        }
-
-        .expired {
-            background-color: #efb9b9;
-        }
-
-        .expiring {
-            background-color: #f0e68c;
-        }
-
-        .currentyear {
-            background-color: lightgreen;
-        }
-
-        .alert-red {
-            background-color: #efb9b9;
-        }
-
-        .alert-yellow {
-            background-color: #f0e68c;
-        }
-    </style>
+    <link rel="stylesheet" href="/static/css/styles.css">
 </head>
 
 <body>
     <h2>Medication List</h2>
-    {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
-    or expiry_alerts['closest_expiry'] %}
-    <a href="/"><button>Back to Medicine Tracker Menu</button></a>
-    <div class="alert-red">
+    <div class="alert-box">
+        {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or
+        expiry_alerts['expiring_in_two_months']
+        or expiry_alerts['closest_expiry'] %}
         {% if expiry_alerts['expired'] %}
-        <p><strong>Expired Medications:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expired'] %}
-            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a>
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="alert-red" style="display: inline-block;">
+            <p><strong>Expired Medications:</strong></p>
+            <ul>
+                {% for med in expiry_alerts['expired'] %}
+                <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
-    </div>
-    <div class="alert-yellow">
         {% if expiry_alerts['expiring_in_one_month'] %}
-        <p><strong>Expiring in one month:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expiring_in_one_month'] %}
-            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
-            {% endfor %}
-        </ul>
+        <div class="alert-yellow">
+            <p><strong>Expiring in one month:</strong></p>
+            <ul>
+                {% for med in expiry_alerts['expiring_in_one_month'] %}
+                <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
         {% if expiry_alerts['expiring_in_two_months'] %}
-        <p><strong>Expiring in two months:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expiring_in_two_months'] %}
-            <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
-            {% endfor %}
-        </ul>
+        <div class="alert-yellow">
+            <p><strong>Expiring in two months:</strong></p>
+            <ul>
+                {% for med in expiry_alerts['expiring_in_two_months'] %}
+                <li>{{med[1]}}: <a href="/edit/{{med[0]}}">{{med[3]}}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
         {% endif %}
-        {% if expiry_alerts['closest_expiry'] and not expiry_alerts['expiring_in_one_month'] and not
-        expiry_alerts['expiring_in_two_months'] %}
-        <p><strong>Soonest Expiry:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['closest_expiry'] %}
-            <li>Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
-            {% endfor %}
-        </ul>
         {% endif %}
     </div>
-    {% endif %}
-    <form method="get">
-        <input type="text" name="search_term" placeholder="Search by Brand, Name or Location"
-            value="{{ search_term if search_term else ''}}">
-        <label for="sort_by">Sort by:</label>
-        <select name="sort_by" id="sort_by">
-            <option value="medication_id" {% if sort_by=="medication_id" %}selected{% endif %}>ID</option>
-            <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
-            <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication Name
-            </option>
-            <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
-            <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
-        </select>
-        <label for="sort_order">Order:</label>
-        <select name="sort_order" id="sort_order">
-            <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
-            <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
-        </select>
-        <button type="submit">Apply Filter and Sorting</button>
-    </form>
-    <table>
-        <thead>
-            <tr>
-                <th>Brand Name</th>
-                <th>Medication Name</th>
-                <th>Expiry Date</th>
-                <th>Location</th>
-                <th>Notes</th>
-                <th>Edit</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for medication in medications %}
-            <tr
-                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
-                <td>{{ medication[1] }}</td>
-                <td>{{ medication[2] }}</td>
-                <td>{{ medication[3] }}</td>
-                <td>{{ medication[4] }}</td>
-                <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
-                <td> <a href="/edit/{{medication[0]}}"><button>Edit</button></a> </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+    <div class="container" style="text-align: center;">
+
+        <button id="search-med-button">Search Medication</button>
+        <button id="sort-med-button">Sort Medications</button>
+        <a href="/"><button>Back to Menu</button></a>
+
+        <br><br>
+
+        <div id="search-med-form" class="hidden">
+            <form method="get">
+                <input id="search-med-input" type="text" name="search_term"
+                    placeholder="Search by Brand Name, Medication Name or Location"
+                    value="{{ search_term if search_term else ''}}">
+                <button id="search-med-button" style="width: auto">Search</button>
+            </form>
+        </div>
+
+        <div id="sort-med-form" class="hidden">
+            <form method="get" style="text-align: center;">
+                <label for="sort_by">Sort by:</label>
+                <select name="sort_by" id="sort_by">
+                    <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
+                    <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication
+                        Name
+                    </option>
+                    <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
+                    <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
+                </select>
+                <label for="sort_order">Order:</label>
+                <select name="sort_order" id="sort_order">
+                    <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
+                    <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
+                </select><br>
+                <button type="submit">Apply Filter</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Brand Name</th>
+                    <th>Medication Name</th>
+                    <th>Expiry Date</th>
+                    <th>Location</th>
+                    <th>Notes</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for medication in medications %}
+                <tr
+                    class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% elif medication[3][:4] == now.strftime('%Y') %}currentyear{% endif %}">
+                    <td style="text-align: center;">{{ medication[1] }}</td>
+                    <td>{{ medication[2] }}</td>
+                    <td style="text-align: center;">{{ medication[3] }}</td>
+                    <td style="text-align: center;">{{ medication[4] }}</td>
+                    <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
+                    <td> <a
+                            href="/edit/{{medication[0]}}?sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}&page={{page}}"><button
+                                style="width: auto;">Edit</button></a> </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById("search-med-button").addEventListener("click", function () {
+            var form = document.getElementById("search-med-form");
+            form.classList.toggle("hidden");
+        });
+        document.getElementById("sort-med-button").addEventListener("click", function () {
+            var form = document.getElementById("sort-med-form");
+            form.classList.toggle("hidden");
+        });
+    </script>
 </body>
 
 </html>

@@ -1,0 +1,141 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+h1,
+h2,
+h3 {
+  color: #333;
+  text-align: center;
+}
+ul,
+ol {
+  margin: 0;
+  list-style-type: none;
+  text-align: left;
+}
+th,
+td {
+  border: 1px solid black;
+  padding: 0 20px;
+}
+th {
+  background-color: #f2f2f2;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+  color: blue;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+.container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+button {
+  display: inline-block;
+  width: 200px;
+  margin: 20px 0;
+  padding: 10px 15px;
+  font-size: 14px;
+  background-color: #007bff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+table {
+  margin: auto;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.about-section {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.expired {
+  background-color: #efb9b9;
+}
+
+.expiring {
+  background-color: #f0e68c;
+}
+
+.currentyear {
+  background-color: lightgreen;
+}
+
+.hidden {
+  display: none;
+}
+
+.alert-box {
+  display: flex;
+  justify-content: space-between;
+}
+
+.alert-red {
+  flex: 1;
+  background-color: #efb9b9;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+}
+
+.alert-yellow {
+  flex: 1;
+  background-color: #f0e68c;
+  text-align: center;
+  padding: 10px;
+  margin: 5px;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination a {
+  display: inline-block;
+  padding: 8px 16px;
+  text-decoration: none;
+  border: 1px solid #ddd;
+  margin: 0 4px;
+}
+
+.pagination a.active {
+  background-color: #04aa6d;
+  color: white;
+  border: 1px solid #04aa6d;
+}
+
+#search-med-input {
+  width: 100%; /* Adjust width to fill the container */
+  max-width: 500px; /* Optional: Limit maximum width */
+  padding: 10px; /* Optional: Add padding for better spacing */
+  border: 1px solid #ccc; /* Optional: Add a border for clarity */
+  border-radius: 5px; /* Optional: Add rounded corners */
+  box-sizing: border-box; /* Ensure padding doesn't increase width */
+}
