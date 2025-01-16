@@ -5,62 +5,78 @@
     <meta charset="UTF-8">
     <title>Medication Tracker</title>
     <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .expired {
+            background-color: #efb9b9;
+        }
+
+        .expiring {
+            background-color: #f0e68c;
+        }
+
         .hidden {
             display: none;
+        }
+
+        .alert-red {
+            background-color: #efb9b9;
+        }
+
+        .alert-yellow {
+            background-color: #f0e68c;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination a {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #04AA6D;
+            color: white;
+            border: 1px solid #04AA6D;
         }
     </style>
 </head>
 
 <body>
-    {% if expiry_alerts['expired'] or expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months']
-    or expiry_alerts['closest_expiry'] %}
-    <div style="color: red;">
-        {% if expiry_alerts['expired'] %}
-        <p><strong>Expired Medications:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expired'] %}
-            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
-                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% if expiry_alerts['expiring_in_one_month'] %}
-        <p><strong>Expiring in one month:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expiring_in_one_month'] %}
-            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
-                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% if expiry_alerts['expiring_in_two_months'] %}
-        <p><strong>Expiring in two months:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['expiring_in_two_months'] %}
-            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}
-                <a href="/edit/{{med[0]}}"><button>Edit</button></a>
-            </li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% if expiry_alerts['closest_expiry'] and not expiry_alerts['expiring_in_one_month'] and not
-        expiry_alerts['expiring_in_two_months'] %}
-        <p><strong>Soonest Expiry:</strong></p>
-        <ul>
-            {% for med in expiry_alerts['closest_expiry'] %}
-            <li>ID: {{med[0]}}, Brand: {{med[1]}}, Med: {{med[2]}}, Expiry: {{med[3]}}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
+    {% if expiry_alerts['expired'] %}
+    <div class="alert-red">
+        <p><strong>ALERT: There are expired medications. Please edit or delete.</strong></p>
+    </div>
+    {% endif %}
+    {% if expiry_alerts['expiring_in_one_month'] or expiry_alerts['expiring_in_two_months'] %}
+    <div class="alert-yellow">
+        <p><strong>ALERT: There are medications expiring soon.</strong></p>
     </div>
     {% endif %}
 
     <h2>Medication Tracker Menu</h2>
     <button id="add-med-button">Add Medication</button>
     <br><br>
-    <a href="/medications"><button>View Medications</button></a>
 
     <div id="add-med-form" class="hidden">
         <form method="post">
@@ -85,6 +101,60 @@
             <input type="submit" value="Add Medication" {% if brand_name_error %}disabled{% endif %}>
         </form>
     </div>
+
+    <form method="get">
+        <input type="text" name="search_term" placeholder="Search by Brand, Name or Location"
+            value="{{ search_term if search_term else ''}}">
+        <label for="sort_by">Sort by:</label>
+        <select name="sort_by" id="sort_by">
+            <option value="medication_id" {% if sort_by=="medication_id" %}selected{% endif %}>ID</option>
+            <option value="brand_name" {% if sort_by=="brand_name" %}selected{% endif %}>Brand Name</option>
+            <option value="medication_name" {% if sort_by=="medication_name" %}selected{% endif %}>Medication Name
+            </option>
+            <option value="expiry_date" {% if sort_by=="expiry_date" %}selected{% endif %}>Expiry Date</option>
+            <option value="location" {% if sort_by=="location" %}selected{% endif %}>Location</option>
+        </select>
+        <label for="sort_order">Order:</label>
+        <select name="sort_order" id="sort_order">
+            <option value="asc" {% if sort_order=="asc" %}selected{% endif %}>Ascending</option>
+            <option value="desc" {% if sort_order=="desc" %}selected{% endif %}>Descending</option>
+        </select>
+        <button type="submit">Apply Filter and Sorting</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Brand Name</th>
+                <th>Medication Name</th>
+                <th>Expiry Date</th>
+                <th>Location</th>
+                <th>Notes</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medication in medications %}
+            <tr
+                class="{% if medication in expiry_alerts['expired'] %}expired{% elif medication in expiry_alerts['expiring_in_one_month'] or medication in expiry_alerts['expiring_in_two_months'] %}expiring{% endif %}">
+                <td>{{ medication[1] }}</td>
+                <td>{{ medication[2] }}</td>
+                <td>{{ medication[3] }}</td>
+                <td>{{ medication[4] }}</td>
+                <td>{{ medication[5] if medication[5] else 'No Notes' }}</td>
+                <td> <a href="/edit/{{medication[0]}}"><button>Edit</button></a> </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% for page_num in range(1, total_pages + 1) %}
+        <a href="?page={{ page_num }}&sort_by={{sort_by}}&sort_order={{sort_order}}&search_term={{search_term}}" {% if
+            page==page_num %}class="active" {% endif %}>{{ page_num }}</a>
+        {% endfor %}
+    </div>
+    <br>
+    <a href="/medications"><button>View All Medications in a separate page</button></a>
 
     <script>
         document.getElementById("add-med-button").addEventListener("click", function () {

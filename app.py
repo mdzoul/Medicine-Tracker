@@ -60,6 +60,36 @@ def index():
     expiry_alerts = get_expiry_alerts(db)
     brand_name_error = None
 
+    search_term = request.args.get("search_term", "")
+    sort_by = request.args.get("sort_by", "expiry_date")
+    sort_order = request.args.get("sort_order", "asc")
+    page = request.args.get("page", 1, type=int)
+    per_page = 10
+
+    with db as db_conn:
+        query = "SELECT * FROM medications"
+        query_args = []
+
+        if search_term:
+            query += (
+                " WHERE brand_name LIKE ? OR medication_name LIKE ? OR location LIKE ?"
+            )
+            query_args.extend(
+                [f"%{search_term}%", f"%{search_term}%", f"%{search_term}%"]
+            )
+
+        query += f" ORDER BY {sort_by} {sort_order}"
+
+        db_conn.cursor.execute(query, query_args)
+        all_medications = db_conn.cursor.fetchall()
+
+    start = (page - 1) * per_page
+    end = start + per_page
+    medications = all_medications[start:end]
+
+    total_meds = len(all_medications)
+    total_pages = (total_meds + per_page - 1) // per_page
+
     if request.method == "POST":
         brand_name = request.form.get("brand_name")
         medication_name = request.form.get("medication_name")
@@ -82,10 +112,26 @@ def index():
                     location,
                     notes if notes else None,
                 )
-                return redirect(url_for("index"))
+                return redirect(
+                    url_for(
+                        "index",
+                        sort_by=sort_by,
+                        search_term=search_term,
+                        sort_order=sort_order,
+                    )
+                )
 
     return render_template(
-        "index.html", expiry_alerts=expiry_alerts, brand_name_error=brand_name_error
+        "index.html",
+        medications=medications,
+        expiry_alerts=expiry_alerts,
+        brand_name_error=brand_name_error,
+        sort_by=sort_by,
+        search_term=search_term,
+        sort_order=sort_order,
+        db=db,
+        page=page,
+        total_pages=total_pages,
     )
 
 
@@ -113,8 +159,9 @@ def medications():
         db_conn.cursor.execute(query, query_args)
         medications = db_conn.cursor.fetchall()
 
-    expiry_alerts = get_expiry_alerts(db)
-
+    expiry_alerts = get_expiry_alerts(
+        db
+    )  # Added this to render the expiry alerts in this page also.
     return render_template(
         "medications.html",
         medications=medications,
@@ -122,6 +169,7 @@ def medications():
         search_term=search_term,
         sort_order=sort_order,
         expiry_alerts=expiry_alerts,
+        db=db,
     )
 
 
@@ -147,12 +195,14 @@ def edit_medication(medication_id):
             notes if notes else None,
         )
         return redirect(
-            url_for("index")
+            url_for(
+                "index", sort_by=sort_by, search_term=search_term, sort_order=sort_order
+            )
         )  # redirect to the index once you have finished
 
     expiry_alerts = get_expiry_alerts(db)
     return render_template(
-        "index.html", medication=medication, expiry_alerts=expiry_alerts
+        "index.html", medication=medication, expiry_alerts=expiry_alerts, db=db
     )
 
 
