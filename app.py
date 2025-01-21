@@ -1,14 +1,14 @@
 """
-This module manages the core application logic for the Medication Tracker Web App.
+This module manages the core application logic for the
+Medication Tracker Web App.
 
 It sets up the database connection, manages user interactions, displays alerts,
-and handles the routing of web requests. It uses Flask to render the different pages
+and handles the routing of web requests.
+It uses Flask to render the different pages
 and the database to save and retrieve all data.
 """
 
 import datetime
-import re
-import sqlite3
 
 from dateutil.relativedelta import relativedelta
 from flask import Flask, redirect, render_template, request, url_for
@@ -20,10 +20,13 @@ app.config["SECRET_KEY"] = "your_secret_key"  # Change for a very complex key
 
 
 def get_expiry_alerts(db):
-    """Gets medications with the closest expiry date, within one month, and within two months."""
+    """
+    Gets medications with the closest expiry date,
+    within one month, and within two months.
+    """
     with db as db_conn:
         db_conn.cursor.execute("SELECT * FROM medications")
-        medications = db_conn.cursor.fetchall()
+        medications_db = db_conn.cursor.fetchall()
 
     today = datetime.date.today()
     one_month_later = today + relativedelta(months=1)
@@ -35,7 +38,7 @@ def get_expiry_alerts(db):
     closest_expiry_meds = []
     closest_expiry_date = None
 
-    for medication in medications:
+    for medication in medications_db:
         try:
             expiry_date = datetime.datetime.strptime(medication[3], "%Y/%m").date()
         except ValueError:
@@ -50,9 +53,9 @@ def get_expiry_alerts(db):
 
         if closest_expiry_date is None or expiry_date < closest_expiry_date:
             closest_expiry_date = expiry_date
-            closest_expiry_meds = [medication]  # new min date, reset list
+            closest_expiry_meds = [medication]
         elif expiry_date == closest_expiry_date:
-            closest_expiry_meds.append(medication)  # same min date, append to the list
+            closest_expiry_meds.append(medication)
 
     return {
         "expired": expired_meds,
@@ -147,6 +150,9 @@ def index():
 
 @app.route("/medications", methods=["GET"])
 def medications():
+    """
+    Displays a list of medications with search, sorting, and expiry alerts.
+    """
     db = MedicationDatabase()
     search_term = request.args.get("search_term", "")
     sort_by = request.args.get("sort_by", "brand_name")
@@ -167,14 +173,14 @@ def medications():
         query += f" ORDER BY {sort_by} {sort_order}"
 
         db_conn.cursor.execute(query, query_args)
-        medications = db_conn.cursor.fetchall()
+        medications_db = db_conn.cursor.fetchall()
 
     expiry_alerts = get_expiry_alerts(
         db
     )  # Added this to render the expiry alerts in this page also.
     return render_template(
         "medications.html",
-        medications=medications,
+        medications=medications_db,
         sort_by=sort_by,
         search_term=search_term,
         sort_order=sort_order,
@@ -186,6 +192,9 @@ def medications():
 
 @app.route("/edit/<int:medication_id>", methods=["GET", "POST"])
 def edit_medication(medication_id):
+    """
+    Handles medication editing via GET for display and POST for submission.
+    """
     db = MedicationDatabase()
     medication = db.get_medication_by_id(medication_id)
     if not medication:
