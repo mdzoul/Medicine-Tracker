@@ -1,3 +1,5 @@
+/* TODO: Viewport for mobile and tablet*/
+
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
@@ -138,32 +140,4 @@ table {
   border: 1px solid #ccc; /* Optional: Add a border for clarity */
   border-radius: 5px; /* Optional: Add rounded corners */
   box-sizing: border-box; /* Ensure padding doesn't increase width */
-}
-
-/* Base styles for all screens */
-
-body {
-  font-family: Arial, sans-serif;
-  line-height: 1.6;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-}
-
-/* Styles for tablets and larger screens */
-@media (min-width: 768px) {
-  body {
-    margin: 30px; /* Increase margin for larger screens */
-  }
-}
-
-/* Styles for large screens (desktops) */
-@media (min-width: 1200px) {
-  body {
-    max-width: 1200px; /* Limit width for large desktops */
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
 }
