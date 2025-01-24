@@ -1,6 +1,6 @@
 """
 This module handles sending notifications using Telegram.
-It uses the python-telegram-bot library to connect to Telegram's API, 
+It uses the python-telegram-bot library to connect to Telegram's API,
 handle incoming messages, and send messages.
 """
 
@@ -8,7 +8,6 @@ import os
 
 from dotenv import load_dotenv
 from telegram import Bot
-from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 load_dotenv()
 
@@ -18,12 +17,16 @@ class TelegramNotifier:
 
     def __init__(self):
         self.bot_token = os.environ.get("TELEGRAM_BOT_TOKEN")
-        self.chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+        self.chat_ids = os.environ.get("TELEGRAM_CHAT_ID")
 
-        if not all([self.bot_token, self.chat_id]):
+        if not all([self.bot_token, self.chat_ids]):
             print("Error: Telegram environment variables not set.")
             self.bot = None
         else:
+            # """Create list of chat ids from CSV value."""
+            # self.chat_ids = [
+            #     chat_id.strip() for chat_id in self.chat_ids.split(",")
+            # ]
             self.bot = Bot(token=self.bot_token)
 
     async def send_telegram_alert(self, expiry_alerts):
@@ -73,7 +76,7 @@ class TelegramNotifier:
         ):
             message_body += "---\nNo medications found or no valid expiry dates.\n"
 
-        await self.bot.send_message(chat_id=self.chat_id, text=message_body)
+        await self.bot.send_message(chat_id=self.chat_ids, text=message_body)
         print("Telegram alert sent.")
 
     async def handle_message(self, update, context):
