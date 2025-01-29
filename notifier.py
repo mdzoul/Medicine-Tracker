@@ -37,24 +37,24 @@ class TelegramNotifier:
         message_body = "Medication Expiry Alerts:\n\n"
 
         if expiry_alerts["expired"]:
-            message_body += "---\nAlert: The following medications have expired today. Please edit or delete:\n"
+            message_body += "---\nALERT: The following medications have expired today. Please edit or delete:\n"
             for med in expiry_alerts["expired"]:
                 message_body += (
-                    f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}\n"
+                    f"\n{med[1]}\n{med[2]}\nExpiry: {med[3]}\nLocation: {med[4]}\n"
                 )
 
         if expiry_alerts["expiring_in_one_month"]:
-            message_body += "---\nAlert: The following medication(s) expire within the next month:\n"
+            message_body += "---\nWARNING: The following medication(s) expire within the next ONE (1) month:\n"
             for med in expiry_alerts["expiring_in_one_month"]:
                 message_body += (
-                    f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}\n"
+                    f"\n{med[1]}\n{med[2]}\nExpiry: {med[3]}\nLocation: {med[4]}\n"
                 )
 
         if expiry_alerts["expiring_in_two_months"]:
-            message_body += "---\nAlert: The following medication(s) expire within the next two months:\n"
+            message_body += "---\nWARNING: The following medication(s) expire within the next TWO (2) months:\n"
             for med in expiry_alerts["expiring_in_two_months"]:
                 message_body += (
-                    f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}\n"
+                    f"\n{med[1]}\n{med[2]}\nExpiry: {med[3]}\nLocation: {med[4]}\n"
                 )
 
         if (
@@ -62,10 +62,10 @@ class TelegramNotifier:
             and not expiry_alerts["expiring_in_one_month"]
             and not expiry_alerts["expiring_in_two_months"]
         ):
-            message_body += "---\nAlert: The following medication(s) have the soonest expiry date:\n"
+            message_body += "---\nWARNING: The following medication(s) have the soonest expiry date:\n"
             for med in expiry_alerts["closest_expiry"]:
                 message_body += (
-                    f"   - ID:{med[0]}, Brand:{med[1]}, Med:{med[2]}, Expiry:{med[3]}\n"
+                    f"\n{med[1]}\n{med[2]}\nExpiry: {med[3]}\nLocation: {med[4]}\n"
                 )
 
         if (
